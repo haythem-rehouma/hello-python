@@ -1,12 +1,14 @@
 pipeline {
     agent any
     environment {
-        PATH = "${env.PATH}:/usr/bin/python3"
+        JAVA_HOME = 'C:\\Program Files\\Java\\jdk1.8.0_202'
+        PYTHON_HOME = 'C:\\Users\\rehou\\AppData\\Local\\Microsoft\\WindowsApps'
+        PATH = "${env.PATH};${JAVA_HOME}\\bin;${PYTHON_HOME}"
     }
     stages {
         stage('Checkout') {
             steps {
-               git branch: 'main', url: 'https://github.com/haythem-rehouma/hello-python.git'
+                git branch: 'main', url: 'https://github.com/haythem-rehouma/hello-python.git'
             }
         }
         stage('Build') {
@@ -14,14 +16,17 @@ pipeline {
                 script {
                     if (isUnix()) {
                         sh 'echo "Running on Unix"'
-                        // Add your Unix-specific build commands here
+                        sh 'javac HelloWorld.java'
+                        sh 'java HelloWorld'
+                        sh 'python3 hello.py'
                     } else {
                         bat 'echo "Running on Windows"'
-                        // Add your Windows-specific build commands here
+                        bat 'javac HelloWorld.java'
+                        bat 'java HelloWorld'
+                        bat 'python hello.py'
                     }
                 }
             }
         }
     }
 }
-
