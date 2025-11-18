@@ -1,11 +1,9 @@
 pipeline {
     agent any
 
-    // On déclare juste des variables "brutes" ici (PAS de isUnix() dans environment)
     environment {
         JAVA_HOME_LINUX   = '/usr/lib/jvm/java-8-openjdk-amd64'
         JAVA_HOME_WINDOWS = 'C:\\Program Files\\Java\\jdk1.8.0_202'
-        PYTHON_WIN        = 'C:\\Users\\rehou\\AppData\\Local\\Microsoft\\WindowsApps\\python3.exe'
     }
 
     stages {
@@ -19,7 +17,7 @@ pipeline {
             steps {
                 script {
                     if (isUnix()) {
-                        // ----- AGENT LINUX -----
+                        // --- AGENT LINUX ---
                         env.JAVA_HOME = env.JAVA_HOME_LINUX
                         env.PATH      = "${env.PATH}:${env.JAVA_HOME}/bin:/usr/bin"
 
@@ -35,11 +33,10 @@ pipeline {
                             python3 hello.py
                         '''
                     } else {
-                        // ----- AGENT WINDOWS -----
+                        // --- AGENT WINDOWS ---
                         env.JAVA_HOME = env.JAVA_HOME_WINDOWS
                         env.PATH      = "${env.PATH};${env.JAVA_HOME}\\bin"
 
-                        // IMPORTANT : on met le chemin complet vers python3.exe
                         bat """
                             echo Running on Windows
                             echo JAVA_HOME=%JAVA_HOME%
@@ -48,7 +45,13 @@ pipeline {
                             javac HelloWorld.java
                             java HelloWorld
 
-                            "%PYTHON_WIN%" hello.py
+                            rem --- Essai 1 : python classique dans le PATH ---
+                            python --version
+                            python hello.py || echo python hello.py failed
+
+                            rem --- Essai 2 (fallback) : Python Launcher py.exe ---
+                            py -3 --version
+                            py -3 hello.py
                         """
                     }
                 }
